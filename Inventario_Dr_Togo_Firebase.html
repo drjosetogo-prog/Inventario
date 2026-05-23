@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a2540">
+<title>Inventario · Dr. Togo Peraza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a2540;
+    --navy-deep: #051628;
+    --gold: #c9a961;
+    --gold-light: #e4c97e;
+    --cream: #faf7f0;
+    --paper: #fdfcf8;
+    --ink: #1a1a1a;
+    --muted: #6b7280;
+    --line: #e5e0d4;
+    --danger: #b91c1c;
+    --danger-bg: #fef2f2;
+    --warn: #b45309;
+    --warn-bg: #fffbeb;
+    --ok: #166534;
+    --ok-bg: #f0fdf4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Manrope', -apple-system, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* PANTALLA DE LOGIN */
+  .login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+  }
+  .login-box {
+    background: var(--paper);
+    border-radius: 16px;
+    padding: 40px 28px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border-top: 4px solid var(--gold);
+  }
+  .login-box h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .login-box .login-subtitle {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .login-box .login-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+  .btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    background: white;
+    color: #1f1f1f;
+    border: 1px solid #dadce0;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-google:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .btn-google:active { transform: scale(0.98); }
+  .btn-google svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  .login-error {
+    background: var(--danger-bg);
+    color: var(--danger);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 16px;
+    display: none;
+  }
+  .login-error.show { display: block; }
+
+  .login-footer {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* APP - oculta hasta login */
+  .app-container { display: none; }
+  .app-container.active { display: block; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: var(--paper);
+    padding: 20px 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 24px;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+  }
+  .header .subtitle {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--gold-light);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .user-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.1);
+    padding: 6px 10px 6px 6px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--paper);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .user-badge:hover { background: rgba(255,255,255,0.18); }
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--navy-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .user-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+  .sync-indicator {
+    font-size: 11px;
+    color: var(--gold-light);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .sync-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #4ade80;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* DASHBOARD */
+  .dashboard {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .stat-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    transition: transform 0.2s;
+  }
+  .stat-card:active { transform: scale(0.98); }
+  .stat-card.stat-danger { border-left: 4px solid var(--danger); }
+  .stat-card.stat-warn { border-left: 4px solid var(--warn); }
+  .stat-card.stat-ok { border-left: 4px solid var(--ok); }
+  .stat-card.stat-total { border-left: 4px solid var(--gold); }
+
+  .stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--navy);
+  }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    background: var(--navy);
+    color: var(--paper);
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-gold { background: var(--gold); color: var(--navy-deep); }
+  .btn-outline {
+    background: transparent;
+    color: var(--navy);
+    border: 1px solid var(--navy);
+  }
+  .btn-danger { background: var(--danger); }
+  .btn-small { padding: 8px 12px; font-size: 12px; }
+
+  .search-wrap {
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .search {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .search:focus { outline: none; border-color: var(--gold); }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+  }
+
+  .filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-chip {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .filter-chip.active {
+    background: var(--navy);
+    color: var(--paper);
+    border-color: var(--navy);
+  }
+
+  .inventory-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .item-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .item-card.expiring-soon { background: var(--warn-bg); border-color: var(--warn); }
+  .item-card.expired { background: var(--danger-bg); border-color: var(--danger); }
+
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+  .item-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+  .item-lote {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .badge-ok { background: var(--ok-bg); color: var(--ok); }
+  .badge-warn { background: var(--warn); color: white; }
+  .badge-danger { background: var(--danger); color: white; }
+
+  .item-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+    font-size: 13px;
+  }
+  .item-field { min-width: 0; }
+  .item-field-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .item-field-value {
+    color: var(--ink);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .item-field-full { grid-column: 1 / -1; }
+
+  .item-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .item-meta {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-state h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: var(--navy);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  /* LOADER */
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--line);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 37, 64, 0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.2s;
+  }
+  .modal-backdrop.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  .modal {
+    background: var(--paper);
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-width: 600px;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 24px 20px 32px;
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 8px;
+  }
+
+  .form-group { margin-bottom: 16px; }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .form-input, .form-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--gold); }
+  .form-textarea {
+    resize: vertical;
+    min-height: 70px;
+    font-family: inherit;
+  }
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .form-actions .btn { flex: 1; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--navy);
+    color: var(--paper);
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+    z-index: 200;
+    border-left: 3px solid var(--gold);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (min-width: 768px) {
+    .header { padding: 28px 40px; }
+    .header h1 { font-size: 30px; }
+    .dashboard { grid-template-columns: repeat(4, 1fr); padding: 28px 40px; }
+    .container { padding: 0 40px; }
+    .stat-value { font-size: 38px; }
+    .item-grid { grid-template-columns: repeat(3, 1fr); }
+    .modal-backdrop { align-items: center; }
+    .modal { border-radius: 16px; max-height: 88vh; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PANTALLA DE LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-subtitle">Acceso autorizado</div>
+    <h1>Inventario Clínico</h1>
+    <p class="login-desc">
+      Sistema privado de inventario de cremas hormonales bioidénticas. 
+      Solo personal autorizado del Dr. Togo Peraza.
+    </p>
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Iniciar sesión con Google
+    </button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-footer">
+      🔒 Datos encriptados · Acceso restringido al equipo médico autorizado<br>
+      Dr. José María Togo Peraza · Ginecología Oncológica
+    </div>
+  </div>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div class="app-container" id="appContainer">
+  <header class="header">
+    <div class="header-top">
+      <div>
+        <div class="subtitle">Inventario clínico</div>
+        <h1>Cremas Hormonales</h1>
+        <div class="sync-indicator">
+          <span class="sync-dot"></span>
+          <span id="syncStatus">Sincronizado en tiempo real</span>
+        </div>
+      </div>
+      <div class="user-badge" onclick="signOut()" title="Cerrar sesión">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <span id="userName">...</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard">
+    <div class="stat-card stat-total">
+      <div class="stat-label">Total</div>
+      <div class="stat-value" id="statTotal">0</div>
+      <div class="stat-sub">productos en inventario</div>
+    </div>
+    <div class="stat-card stat-ok">
+      <div class="stat-label">Vigentes</div>
+      <div class="stat-value" id="statOk">0</div>
+      <div class="stat-sub">más de 30 días</div>
+    </div>
+    <div class="stat-card stat-warn">
+      <div class="stat-label">Por caducar</div>
+      <div class="stat-value" id="statWarn">0</div>
+      <div class="stat-sub">en 30 días o menos</div>
+    </div>
+    <div class="stat-card stat-danger">
+      <div class="stat-label">Caducados</div>
+      <div class="stat-value" id="statExpired">0</div>
+      <div class="stat-sub">retirar de stock</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="toolbar">
+      <button class="btn btn-gold" onclick="openModal()">+ Nueva crema</button>
+      <button class="btn btn-outline btn-small" onclick="exportCSV()">⊞ Exportar Excel</button>
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" class="search" id="searchInput" placeholder="Buscar por crema, lote, paciente..." oninput="render()">
+    </div>
+
+    <div class="filters">
+      <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">Todos</div>
+      <div class="filter-chip" data-filter="expired" onclick="setFilter('expired')">Caducados</div>
+      <div class="filter-chip" data-filter="warn" onclick="setFilter('warn')">Por caducar</div>
+      <div class="filter-chip" data-filter="ok" onclick="setFilter('ok')">Vigentes</div>
+      <div class="filter-chip" data-filter="low-stock" onclick="setFilter('low-stock')">Stock bajo</div>
+    </div>
+
+    <div class="inventory-list" id="inventoryList">
+      <div class="loader"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FORMULARIO -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modalTitle">Nueva crema</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <form id="itemForm" onsubmit="saveItem(event)">
+      <input type="hidden" id="itemId">
+
+      <div class="form-group">
+        <label class="form-label">Nombre de la crema *</label>
+        <input type="text" class="form-input" id="nombre" required placeholder="Ej. Estradiol 0.05% / Progesterona 100mg">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Lote *</label>
+          <input type="text" class="form-input" id="lote" required placeholder="Ej. L-2026-045">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stock disponible</label>
+          <input type="number" class="form-input" id="stock" min="0" step="1" placeholder="Unidades">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Fecha de producción *</label>
+          <input type="date" class="form-input" id="fechaProduccion" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de caducidad *</label>
+          <input type="date" class="form-input" id="fechaCaducidad" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Precio de venta (MXN)</label>
+        <input type="number" class="form-input" id="precio" min="0" step="0.01" placeholder="0.00">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Paciente</label>
+          <input type="text" class="form-input" id="paciente" placeholder="Nombre completo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vendido por</label>
+          <input type="text" class="form-input" id="vendedor" placeholder="Nombre">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Notas clínicas</label>
+        <textarea class="form-textarea" id="notas" placeholder="Indicaciones, posología, observaciones..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-gold">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup,
+    signOut as fbSignOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+  import {
+    getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
+    onSnapshot, serverTimestamp, query, orderBy
+  } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+  // ========================================
+  // CONFIGURACIÓN DE FIREBASE (Dr. Togo)
+  // ========================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPuimgL9A_KwVR-L59PU9SC5BCjy74bTg",
+    authDomain: "inventario-togo.firebaseapp.com",
+    projectId: "inventario-togo",
+    storageBucket: "inventario-togo.firebasestorage.app",
+    messagingSenderId: "169291963495",
+    appId: "1:169291963495:web:11b88a408c77f8ca4a48c2"
+  };
+
+  // ========================================
+  // USUARIOS AUTORIZADOS
+  // Agrega los Gmails de tu equipo aquí
+  // ========================================
+  const USUARIOS_AUTORIZADOS = [
+    "drjosetogo@gmail.com",          // Dr. José María Togo Peraza
+    "drjosetogo.admon@gmail.com",    // Administración / Secretarias
+  ];
+
+  // Inicializar Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+  const inventarioRef = collection(db, "inventario");
+
+  const UMBRAL_DIAS = 30;
+  const STOCK_BAJO = 3;
+
+  let inventory = [];
+  let currentFilter = 'all';
+  let currentUser = null;
+  let unsubscribeSnapshot = null;
+
+  // ========================================
+  // AUTENTICACIÓN
+  // ========================================
+  window.signInWithGoogle = async function() {
+    try {
+      document.getElementById('loginError').classList.remove('show');
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Error de login:", error);
+      showLoginError("No se pudo iniciar sesión: " + error.message);
+    }
+  };
+
+  window.signOut = function() {
+    if (confirm('¿Cerrar sesión?')) {
+      fbSignOut(auth);
+    }
+  };
+
+  function showLoginError(msg) {
+    const el = document.getElementById('loginError');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // Validar si está autorizado (si la lista no está vacía)
+      if (USUARIOS_AUTORIZADOS.length > 0 && !USUARIOS_AUTORIZADOS.includes(user.email)) {
+        await fbSignOut(auth);
+        showLoginError(`El correo ${user.email} no está autorizado. Contacta al Dr. Togo.`);
+        return;
+      }
+
+      currentUser = user;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appContainer').classList.add('active');
+
+      // Mostrar nombre y avatar
+      const nombre = user.displayName || user.email.split('@')[0];
+      document.getElementById('userName').textContent = nombre.split(' ')[0];
+      const avatar = document.getElementById('userAvatar');
+      if (user.photoURL) {
+        avatar.innerHTML = `<img src="${user.photoURL}" alt="">`;
+      } else {
+        avatar.textContent = nombre[0].toUpperCase();
+      }
+
+      // Suscribirse al inventario en tiempo real
+      subscribeToInventory();
+    } else {
+      currentUser = null;
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('appContainer').classList.remove('active');
+      if (unsubscribeSnapshot) {
+        unsubscribeSnapshot();
+        unsubscribeSnapshot = null;
+      }
+    }
+  });
+
+  // ========================================
+  // SINCRONIZACIÓN EN TIEMPO REAL
+  // ========================================
+  function subscribeToInventory() {
+    if (unsubscribeSnapshot) unsubscribeSnapshot();
+    
+    const q = query(inventarioRef, orderBy("fechaCaducidad", "asc"));
+    
+    unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+      inventory = [];
+      snapshot.forEach((docSnap) => {
+        inventory.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      render();
+      document.getElementById('syncStatus').textContent = 'Sincronizado · ' + new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'});
+    }, (error) => {
+      console.error("Error al sincronizar:", error);
+      document.getElementById('syncStatus').textContent = 'Error de conexión';
+      toast('Error de conexión: ' + error.message);
+    });
+  }
+
+  // ========================================
+  // CRUD
+  // ========================================
+  window.saveItem = async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('itemId').value;
+    const data = {
+      nombre: document.getElementById('nombre').value.trim(),
+      lote: document.getElementById('lote').value.trim(),
+      stock: document.getElementById('stock').value,
+      fechaProduccion: document.getElementById('fechaProduccion').value,
+      fechaCaducidad: document.getElementById('fechaCaducidad').value,
+      precio: document.getElementById('precio').value,
+      paciente: document.getElementById('paciente').value.trim(),
+      vendedor: document.getElementById('vendedor').value.trim(),
+      notas: document.getElementById('notas').value.trim(),
+      modificadoPor: currentUser.displayName || currentUser.email,
+      modificadoEn: serverTimestamp()
+    };
+
+    try {
+      if (id) {
+        await updateDoc(doc(db, "inventario", id), data);
+        toast('Crema actualizada');
+      } else {
+        data.creadoPor = currentUser.displayName || currentUser.email;
+        data.creadoEn = serverTimestamp();
+        await addDoc(inventarioRef, data);
+        toast('Crema agregada');
+      }
+      closeModal();
+    } catch (error) {
+      console.error("Error al guardar:", error);
+      toast('Error al guardar: ' + error.message);
+    }
+  };
+
+  window.deleteItem = async function(id) {
+    const item = inventory.find(i => i.id === id);
+    if (!item) return;
+    if (confirm(`¿Eliminar "${item.nombre}" (Lote ${item.lote})?\n\nEsta acción no se puede deshacer.`)) {
+      try {
+        await deleteDoc(doc(db, "inventario", id));
+        toast('Crema eliminada');
+      } catch (error) {
+        toast('Error: ' + error.message);
+      }
+    }
+  };
+
+  window.editItem = function(id) {
+    const item = inventory.find(i => i.id === id);
+    if (item) openModal(item);
+  };
+
+  // ========================================
+  // RENDERIZADO
+  // ========================================
+  function daysUntil(dateStr) {
+    if (!dateStr) return 9999;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const target = new Date(dateStr + 'T00:00:00');
+    return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+  }
+
+  function getStatus(item) {
+    const days = daysUntil(item.fechaCaducidad);
+    if (days < 0) return 'expired';
+    if (days <= UMBRAL_DIAS) return 'warn';
+    return 'ok';
+  }
+
+  function fmtDate(dateStr) {
+    if (!dateStr) return '—';
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  function fmtMoney(n) {
+    if (n === null || n === undefined || n === '') return '—';
+    return '$' + Number(n).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function updateStats() {
+    let ok=0, warn=0, expired=0;
+    inventory.forEach(item => {
+      const s = getStatus(item);
+      if (s==='ok') ok++;
+      else if (s==='warn') warn++;
+      else expired++;
+    });
+    document.getElementById('statTotal').textContent = inventory.length;
+    document.getElementById('statOk').textContent = ok;
+    document.getElementById('statWarn').textContent = warn;
+    document.getElementById('statExpired').textContent = expired;
+  }
+
+  window.setFilter = function(f) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.filter === f);
+    });
+    render();
+  };
+
+  window.render = function() {
+    updateStats();
+    const list = document.getElementById('inventoryList');
+    const search = document.getElementById('searchInput').value.toLowerCase().trim();
+
+    let items = inventory.slice();
+
+    if (search) {
+      items = items.filter(i =>
+        (i.nombre||'').toLowerCase().includes(search) ||
+        (i.lote||'').toLowerCase().includes(search) ||
+        (i.paciente||'').toLowerCase().includes(search) ||
+        (i.vendedor||'').toLowerCase().includes(search)
+      );
+    }
+
+    if (currentFilter !== 'all') {
+      items = items.filter(i => {
+        if (currentFilter === 'low-stock') {
+          return i.stock !== '' && i.stock !== null && i.stock !== undefined && Number(i.stock) <= STOCK_BAJO;
+        }
+        return getStatus(i) === currentFilter;
+      });
+    }
+
+    items.sort((a,b) => daysUntil(a.fechaCaducidad) - daysUntil(b.fechaCaducidad));
+
+    if (items.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <h3>Sin resultados</h3>
+          <p>${inventory.length === 0 ? 'Agrega tu primera crema con el botón "+ Nueva crema"' : 'No hay productos que coincidan con la búsqueda actual'}</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = items.map(item => {
+      const status = getStatus(item);
+      const days = daysUntil(item.fechaCaducidad);
+      let badge = '';
+      if (status === 'expired') {
+        badge = `<span class="badge badge-danger">Caducado · hace ${Math.abs(days)}d</span>`;
+      } else if (status === 'warn') {
+        badge = `<span class="badge badge-warn">Caduca en ${days}d</span>`;
+      } else {
+        badge = `<span class="badge badge-ok">Vigente · ${days}d</span>`;
+      }
+
+      const cardClass = status === 'expired' ? 'expired' : (status === 'warn' ? 'expiring-soon' : '');
+      const stockDisplay = (item.stock !== '' && item.stock !== null && item.stock !== undefined) ? item.stock : '—';
+      const stockLow = (item.stock !== '' && item.stock !== null && item.stock !== undefined && Number(item.stock) <= STOCK_BAJO);
+
+      return `
+        <div class="item-card ${cardClass}">
+          <div class="item-header">
+            <div style="min-width:0;flex:1">
+              <div class="item-title">${escapeHtml(item.nombre)}</div>
+              <div class="item-lote">Lote · ${escapeHtml(item.lote)}</div>
+            </div>
+            ${badge}
+          </div>
+          <div class="item-grid">
+            <div class="item-field">
+              <div class="item-field-label">Producción</div>
+              <div class="item-field-value">${fmtDate(item.fechaProduccion)}</div>
+            </div>
+            <div class="item-field">
+              <div class="item-field-label">Caducidad</div>
+              <div class="item-field-value">${fmtDate(item.fechaCaducidad)}</div>
+            </div>
+            <div class="item-field">
+              <div class="item-field-label">Stock${stockLow ? ' ⚠' : ''}</div>
+              <div class="item-field-value" style="${stockLow?'color:var(--warn);font-weight:700':''}">${stockDisplay}</div>
+            </div>
+            <div class="item-field">
+              <div class="item-field-label">Precio</div>
+              <div class="item-field-value">${fmtMoney(item.precio)}</div>
+            </div>
+            <div class="item-field">
+              <div class="item-field-label">Paciente</div>
+              <div class="item-field-value">${escapeHtml(item.paciente) || '—'}</div>
+            </div>
+            <div class="item-field">
+              <div class="item-field-label">Vendido por</div>
+              <div class="item-field-value">${escapeHtml(item.vendedor) || '—'}</div>
+            </div>
+            ${item.notas ? `
+            <div class="item-field item-field-full">
+              <div class="item-field-label">Notas</div>
+              <div class="item-field-value">${escapeHtml(item.notas)}</div>
+            </div>` : ''}
+          </div>
+          ${item.modificadoPor ? `<div class="item-meta">Última edición por ${escapeHtml(item.modificadoPor)}</div>` : ''}
+          <div class="item-actions">
+            <button class="btn btn-outline btn-small" onclick="editItem('${item.id}')">Editar</button>
+            <button class="btn btn-danger btn-small" onclick="deleteItem('${item.id}')">Eliminar</button>
+          </div>
+        </div>`;
+    }).join('');
+  };
+
+  window.openModal = function(item) {
+    document.getElementById('itemForm').reset();
+    document.getElementById('itemId').value = '';
+    document.getElementById('modalTitle').textContent = 'Nueva crema';
+    if (item) {
+      document.getElementById('modalTitle').textContent = 'Editar crema';
+      document.getElementById('itemId').value = item.id;
+      document.getElementById('nombre').value = item.nombre || '';
+      document.getElementById('lote').value = item.lote || '';
+      document.getElementById('stock').value = item.stock ?? '';
+      document.getElementById('fechaProduccion').value = item.fechaProduccion || '';
+      document.getElementById('fechaCaducidad').value = item.fechaCaducidad || '';
+      document.getElementById('precio').value = item.precio ?? '';
+      document.getElementById('paciente').value = item.paciente || '';
+      document.getElementById('vendedor').value = item.vendedor || '';
+      document.getElementById('notas').value = item.notas || '';
+    }
+    document.getElementById('modalBackdrop').classList.add('active');
+  };
+
+  window.closeModal = function() {
+    document.getElementById('modalBackdrop').classList.remove('active');
+  };
+
+  window.exportCSV = function() {
+    if (inventory.length === 0) {
+      toast('Sin datos para exportar');
+      return;
+    }
+    const headers = ['Nombre','Lote','Stock','Fecha Producción','Fecha Caducidad','Días para caducar','Estado','Precio MXN','Paciente','Vendedor','Notas','Modificado por'];
+    const rows = inventory.map(i => {
+      const days = daysUntil(i.fechaCaducidad);
+      const status = getStatus(i);
+      const statusLabel = status === 'expired' ? 'CADUCADO' : status === 'warn' ? 'POR CADUCAR' : 'VIGENTE';
+      return [
+        i.nombre, i.lote, i.stock ?? '',
+        i.fechaProduccion, i.fechaCaducidad,
+        days, statusLabel,
+        i.precio ?? '',
+        i.paciente || '', i.vendedor || '', i.notas || '',
+        i.modificadoPor || ''
+      ].map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',');
+    });
+    const csv = '\uFEFF' + headers.map(h=>`"${h}"`).join(',') + '\n' + rows.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `inventario_dr_togo_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('CSV exportado');
+  };
+
+  window.toast = function(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  };
+</script>
+
+</body>
+</html>
